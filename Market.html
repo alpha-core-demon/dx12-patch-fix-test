@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ASTRA-MALL | PREMIUM CRYPTO INTERFACE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --ios-bg: #08080a;
+            --glass: rgba(255, 255, 255, 0.02);
+            --glass-heavy: rgba(12, 12, 15, 0.9);
+            --glass-stroke: rgba(255, 255, 255, 0.08);
+            --accent: #AF52DE; 
+            --accent-glow: rgba(175, 82, 222, 0.3);
+            --text-main: #ffffff;
+            --text-sub: #8e8e93;
+            --gold: #e5c07b;
+            --font-main: "SF Pro Display", "SF Pro Text", -apple-system, system-ui, sans-serif;
+        }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: var(--font-main); 
+            background: var(--ios-bg); 
+            color: var(--text-main); 
+            line-height: 1.5; 
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% -10%, rgba(175, 82, 222, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 90% 90%, rgba(229, 192, 123, 0.03) 0%, transparent 40%);
+        }
+
+        .ambient-light {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(800px circle at var(--x, 50%) var(--y, 50%), rgba(175, 82, 222, 0.05), transparent 40%);
+            z-index: -1; pointer-events: none;
+        }
+
+        /* --- 动画增强：初始状态 --- */
+        #main-frame { 
+            width: 92%; 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            padding-top: 40px; 
+            /* 新增过渡属性 */
+            opacity: 0; 
+            filter: blur(20px); 
+            transform: scale(1.05);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* --- 动画增强：激活状态 --- */
+        #main-frame.appear {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+        }
+
+        /* 优化卡片入场序次（可选，增强高级感） */
+        .v-card, .grid-item, .table-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #main-frame.appear .v-card, 
+        #main-frame.appear .grid-item, 
+        #main-frame.appear .table-container {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 顶部导航：三栏分布，中间文字绝对居中 */
+        .ios-nav { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 0; margin-bottom: 60px; position: relative;
+        }
+
+        .brand-logo { 
+            position: absolute; left: 50%; transform: translateX(-50%);
+            font-size: 18px; font-weight: 800; letter-spacing: 4px; 
+            text-transform: uppercase; color: var(--gold); 
+        }
+
+        .back-nav-btn {
+            background: var(--glass); border: 1px solid var(--glass-stroke);
+            backdrop-filter: blur(20px); padding: 10px 20px; border-radius: 16px;
+            color: var(--text-main); text-decoration: none; font-size: 13px;
+            display: flex; align-items: center; gap: 8px;
+            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2;
+        }
+        .back-nav-btn:hover { background: rgba(175, 82, 222, 0.1); border-color: var(--accent); transform: translateX(-4px); }
+
+        .dynamic-island { 
+            background: var(--glass-heavy); border: 1px solid var(--glass-stroke);
+            padding: 10px 25px; border-radius: 30px; font-size: 11px; 
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+        .status-pulse { width: 6px; height: 6px; background: #32d74b; border-radius: 50%; box-shadow: 0 0 12px #32d74b; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        .ios-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 80px; text-align: center; }
+        .grid-item { background: var(--glass); border: 1px solid var(--glass-stroke); padding: 20px; border-radius: 24px; backdrop-filter: blur(10px); }
+        .grid-item span { display: block; font-size: 9px; color: var(--text-sub); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .grid-item b { font-family: 'SF Mono', monospace; font-size: 15px; color: #fff; }
+
+        .hero-section { padding: 40px 0 60px; text-align: center; }
+        .hero-title { 
+            font-size: clamp(40px, 7vw, 75px); font-weight: 700; letter-spacing: -3px; line-height: 1.1; margin-bottom: 25px;
+            background: linear-gradient(180deg, #fff 0%, #AF52DE 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { font-size: 17px; color: var(--text-sub); max-width: 700px; margin: 0 auto; line-height: 1.6; }
+
+        .table-container { background: var(--glass); border: 1px solid var(--glass-stroke); border-radius: 32px; overflow: hidden; backdrop-filter: blur(25px); margin: 60px 0; }
+        .comparison-table { width: 100%; border-collapse: collapse; }
+        .comparison-table th { background: rgba(255,255,255,0.01); padding: 25px; font-size: 11px; color: var(--text-sub); border-bottom: 1px solid var(--glass-stroke); }
+        .comparison-table td { padding: 22px; font-size: 14px; text-align: center; border-bottom: 1px solid var(--glass-stroke); color: #ccc; }
+        .feature-name { color: var(--gold) !important; font-weight: 500; }
+
+        .v-stack { display: flex; flex-direction: column; gap: 30px; margin-bottom: 100px; }
+        .v-card { 
+            background: var(--glass); border: 1px solid var(--glass-stroke); border-radius: 40px; 
+            padding: 60px; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+        }
+        .v-card:hover { transform: scale(1.01); background: rgba(175, 82, 222, 0.03); border-color: var(--accent); }
+        .item-category { font-family: 'SF Mono'; font-size: 11px; color: var(--accent); margin-bottom: 15px; letter-spacing: 3px; text-transform: uppercase; }
+        .v-title { font-size: 36px; font-weight: 600; margin-bottom: 10px; }
+        .v-subtitle { font-size: 16px; color: var(--gold); margin-bottom: 20px; }
+        .v-desc { color: var(--text-sub); font-size: 15px; margin-bottom: 40px; max-width: 650px; }
+        
+        .v-footer { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 25px; border-top: 1px solid var(--glass-stroke); padding-top: 40px; }
+        .item-price { font-family: 'SF Mono'; font-size: 32px; color: #fff; }
+        .buy-btn { background: #fff; color: #000; border: none; padding: 16px 48px; border-radius: 20px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .buy-btn:hover { background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 15px 30px var(--accent-glow); }
+
+        .floating-controls { position: fixed; bottom: 40px; right: 40px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
+        .float-btn {
+            width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(20px); border: 1px solid var(--glass-stroke);
+        }
+
+        #calc-toggle { background: var(--accent); color: #fff; font-size: 22px; box-shadow: 0 15px 40px var(--accent-glow); }
+        #calc-toggle:hover { transform: scale(1.1) rotate(15deg); }
+
+        #back-to-top { background: var(--glass-heavy); color: #fff; font-size: 18px; opacity: 0; transform: translateY(20px); pointer-events: none; }
+        #back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        #back-to-top:hover { background: #fff; color: #000; }
+
+        .calc-panel {
+            position: fixed; bottom: 120px; right: 40px; width: 320px;
+            background: var(--glass-heavy); border: 1px solid var(--glass-stroke);
+            backdrop-filter: blur(40px); border-radius: 35px; padding: 35px;
+            display: none; z-index: 1001; text-align: center;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .calc-input { background: rgba(255,255,255,0.06); border: 1px solid var(--glass-stroke); color: #fff; width: 100%; padding: 18px; border-radius: 18px; margin: 12px 0; font-family: 'SF Mono'; text-align: center; font-size: 20px; outline: none; }
+
+        footer { padding: 100px 0 50px; text-align: center; border-top: 1px solid var(--glass-stroke); }
+
+        @media (max-width: 768px) {
+            .brand-logo { display: none; } /* 移动端隐藏中间文字以防重叠 */
+            .ios-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-light" id="ambient"></div>
+
+    <div class="floating-controls">
+        <div id="back-to-top" class="float-btn"><i class="fa-solid fa-arrow-up"></i></div>
+        <div id="calc-toggle" class="float-btn">₮</div>
+    </div>
+
+    <div class="calc-panel" id="calc-panel">
+        <div style="font-size:10px; color:var(--accent); letter-spacing:3px; margin-bottom:20px; font-weight:700;">CURRENCY EXCHANGE</div>
+        <input type="number" class="calc-input" id="input-rmb" placeholder="输入金额">
+        <div style="color:var(--gold); font-size:18px; margin: 5px 0;">≈</div>
+        <input type="text" class="calc-input" id="output-usdt" readonly style="background:rgba(175, 82, 222, 0.1); border-color:var(--accent); color:var(--accent);">
+        <div style="font-size:12px; color:var(--text-sub); margin-top:15px;">Rate: 1 USDT = 7.2452 RMB</div>
+    </div>
+
+    <main id="main-frame">
+        <header class="ios-nav">
+            <a href="index.html" class="back-nav-btn">
+                <i class="fa-solid fa-chevron-left"></i>
+                <span>返回导航页</span>
+            </a>
+            
+            <div class="brand-logo">Astra Mall.</div> <div class="dynamic-island">
+                <div class="status-pulse"></div>
+                <span id="market-stats">Market Online / Vol: $1.2M</span>
+            </div>
+        </header>
+
+        <section class="ios-grid">
+            <div class="grid-item"><span>GAS PRICE</span><b>21 Gwei</b></div>
+            <div class="grid-item"><span>USDT/RMB</span><b>7.2452</b></div>
+            <div class="grid-item"><span>UPTIME</span><b>99.98%</b></div>
+            <div class="grid-item"><span>NODE</span><b>ASTRA-01</b></div>
+        </section>
+
+        <section class="hero-section">
+            <h1 class="hero-title">加密资产中心</h1>
+            <p class="hero-sub">甄选全球顶级数字资产与基础设施授权，为您的去中心化与 AI 研究旅程提供底层算力及身份支持。</p>
+        </section>
+
+        <section class="table-container">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th class="feature-name">ASSET MATRIX</th>
+                        <th>USDT</th>
+                        <th>VPN Pass</th>
+                        <th>Persona</th>
+                        <th>ChatGPT+</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="feature-name">交付速度</td><td>秒级即达</td><td>即刻授权</td><td>5-10min</td><td>30min内</td></tr>
+                    <tr><td class="feature-name">售后保障</td><td>链上确权</td><td>30天可用</td><td>首登保证</td><td>独享质保</td></tr>
+                    <tr><td class="feature-name">支付权重</td><td>最高优先级</td><td>主流支付</td><td>主流支付</td><td>主流支付</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="v-stack">
+            <div class="v-card">
+                <span class="item-category">Essential Asset</span>
+                <h2 class="v-title">USDT (Tether)</h2>
+                <p class="v-desc">最稳定的加密货币资产，与美元 1:1 锚定。是进入加密世界的通行证，也是资产避险的首选方案。</p>
+                <div class="v-footer">
+                    <div class="item-price">7.25<small>RMB / Unit</small></div>
+                    <button class="buy-btn">立即兑换</button>
+                </div>
+            </div>
+
+            <div class="v-card" style="border-color: var(--accent); background: rgba(175, 82, 222, 0.05);">
+                <span class="item-category">Infrastructure</span>
+                <h2 class="v-title" style="color:var(--accent)">Premium VPN Pass</h2>
+                <h3 class="v-subtitle">星云中继 30天 授权码</h3>
+                <p class="v-desc">解锁 NEBULA-NODE 极速轨道权限。支持 BGP 专线直连，解锁 4K 流媒体与 AI 工具接入能力。</p>
+                <div class="v-footer">
+                    <div class="item-price">39.00<small>RMB</small></div>
+                    <button class="buy-btn" style="background:var(--accent); color:#fff;">获取授权</button>
+                </div>
+            </div>
+
+            <div class="v-card">
+                <span class="item-category">Digital Identity</span>
+                <h2 class="v-title">Digital Persona</h2>
+                <h3 class="v-subtitle">海外 Apple ID / Google 账户</h3>
+                <p class="v-desc">纯净手工注册，包含原始辅助邮箱。已通过安全验证，即买即用，适配全球应用市场。</p>
+                <div class="v-footer">
+                    <div class="item-price">15.00<small>RMB</small></div>
+                    <button class="buy-btn">下单获取</button>
+                </div>
+            </div>
+
+            <div class="v-card">
+                <span class="item-category">AI Power</span>
+                <h2 class="v-title">ChatGPT Plus</h2>
+                <h3 class="v-subtitle">独享成品号 / 代充值服务</h3>
+                <p class="v-desc">接入 GPT-4 核心模型。支持多模态分析、联网搜索及 DALL-E 3 绘画功能。</p>
+                <div class="v-footer">
+                    <div class="item-price">165.00<small>RMB</small></div>
+                    <button class="buy-btn">立即订阅</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p style="font-size: 10px; color: #444; letter-spacing: 5px; font-weight: 700; text-transform: uppercase;">© 2024 - 2026 ASTRA-MALL NETWORKS. ALL RIGHTS RESERVED.</p>
+        </footer>
+    </main>
+
+    <script>
+        // 页面加载完成后触发入场动画
+        window.addEventListener('load', () => {
+            const mainFrame = document.getElementById('main-frame');
+            
+            // 稍微延迟一点点触发，确保浏览器渲染准备就绪
+            requestAnimationFrame(() => {
+                mainFrame.classList.add('appear');
+            });
+
+            // 针对卡片等元素做简单的序次延迟
+            const delayItems = document.querySelectorAll('.grid-item, .v-card');
+            delayItems.forEach((item, index) => {
+                item.style.transitionDelay = `${0.1 + (index * 0.05)}s`;
+            });
+        });
+        
+        ambient = document.getElementById('ambient');
+        window.addEventListener('mousemove', e => {
+            ambient.style.setProperty('--x', e.clientX + 'px');
+            ambient.style.setProperty('--y', e.clientY + 'px');
+        });
+
+        const USDT_RATE = 7.2452;
+        const calcToggle = document.getElementById('calc-toggle');
+        const calcPanel = document.getElementById('calc-panel');
+        const rmbIn = document.getElementById('input-rmb');
+        const usdtOut = document.getElementById('output-usdt');
+
+        calcToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            calcPanel.style.display = (calcPanel.style.display === 'block') ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!calcPanel.contains(e.target) && e.target !== calcToggle) calcPanel.style.display = 'none';
+        });
+
+        rmbIn.addEventListener('input', () => {
+            const val = parseFloat(rmbIn.value) || 0;
+            usdtOut.value = (val / USDT_RATE).toFixed(4) + ' USDT';
+        });
+
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) backToTopBtn.classList.add('visible');
+            else backToTopBtn.classList.remove('visible');
+        });
+        backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        setInterval(() => {
+            const vol = (1.2 + Math.random() * 0.5).toFixed(1);
+            document.getElementById('market-stats').innerText = `Market Online / Vol: $${vol}M`;
+        }, 3000);
+    </script>
+</body>
+</html>
