@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MGNB | 飞跃太平洋 - 全球加速专家</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --ios-bg: #050505;
+            --glass: rgba(255, 255, 255, 0.02);
+            --glass-heavy: rgba(15, 15, 15, 0.8);
+            --glass-stroke: rgba(255, 255, 255, 0.1);
+            --accent: #32d74b; 
+            --accent-glow: rgba(50, 215, 75, 0.3);
+            --text-main: #ffffff;
+            --text-sub: #86868b;
+            --font-main: "SF Pro Display", "SF Pro Text", -apple-system, system-ui, sans-serif;
+        }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: var(--font-main); 
+            background: var(--ios-bg); 
+            color: var(--text-main); 
+            line-height: 1.5; 
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(50, 215, 75, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(175, 82, 222, 0.08) 0%, transparent 50%);
+        }
+
+        .ambient-light {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(800px circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.04), transparent 40%);
+            z-index: -1; pointer-events: none;
+        }
+
+        #main-frame { 
+            width: 92%; 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            padding-top: 40px; 
+            opacity: 0; 
+            filter: blur(20px); 
+            transform: scale(1.05);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #main-frame.appear { opacity: 1; filter: blur(0); transform: scale(1); }
+
+        .v-card, .grid-item, .table-container, .faq-card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #main-frame.appear .v-card, 
+        #main-frame.appear .grid-item, 
+        #main-frame.appear .table-container,
+        #main-frame.appear .faq-card { opacity: 1; transform: translateY(0); }
+
+        .ios-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; margin-bottom: 60px; }
+        .back-nav-btn {
+            background: var(--glass); border: 1px solid var(--glass-stroke); backdrop-filter: blur(15px);
+            padding: 8px 16px; border-radius: 14px; color: var(--text-main); text-decoration: none;
+            font-size: 13px; display: flex; align-items: center; gap: 8px; transition: 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
+        .back-nav-btn:hover { background: rgba(255,255,255,0.1); transform: translateX(-4px); }
+        .brand-logo { font-size: 16px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
+        .dynamic-island { 
+            background: var(--glass-heavy); border: 0.5px solid var(--glass-stroke); padding: 8px 20px; 
+            border-radius: 30px; font-size: 11px; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        .status-pulse { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 12px var(--accent); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
+
+        .ios-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 80px; }
+        .grid-item { 
+            background: var(--glass); border: 1px solid var(--glass-stroke); padding: 22px; 
+            border-radius: 20px; backdrop-filter: blur(10px); transition: 0.4s ease;
+        }
+        .grid-item:hover { border-color: var(--accent); background: rgba(255,255,255,0.03); }
+        .grid-item span { display: block; font-size: 9px; color: var(--text-sub); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .grid-item b { font-family: 'SF Mono', monospace; font-size: 16px; font-weight: 400; color: #fff; }
+
+        .hero-section { text-align: center; padding: 80px 0; }
+        .hero-title { 
+            font-size: clamp(45px, 8vw, 85px); font-weight: 700; letter-spacing: -4px; line-height: 1.1; margin-bottom: 30px;
+            background: linear-gradient(180deg, #fff 0%, var(--accent) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { font-size: 18px; color: var(--text-sub); max-width: 780px; margin: 0 auto; font-weight: 400; line-height: 1.6; }
+
+        .table-container { 
+            background: var(--glass); border: 1px solid var(--glass-stroke); border-radius: 28px; 
+            overflow: hidden; backdrop-filter: blur(25px); margin: 60px 0;
+        }
+        .comparison-table { width: 100%; border-collapse: collapse; }
+        .comparison-table th { background: rgba(255,255,255,0.02); padding: 25px; font-size: 11px; color: var(--text-sub); letter-spacing: 1px; border-bottom: 1px solid var(--glass-stroke); }
+        .comparison-table td { padding: 22px; font-size: 14px; text-align: center; border-bottom: 1px solid var(--glass-stroke); color: #ddd; }
+        .feature-name { text-align: left !important; padding-left: 40px !important; color: #888 !important; }
+
+        .v-stack { display: flex; flex-direction: column; gap: 30px; margin-bottom: 100px; }
+        .v-card { 
+            background: var(--glass); border: 1px solid var(--glass-stroke); border-radius: 40px; 
+            padding: 50px 60px; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden;
+        }
+        .v-card:hover { transform: scale(1.02); background: rgba(255, 255, 255, 0.04); border-color: var(--accent); box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        .v-price { font-family: 'SF Mono'; font-size: 13px; color: var(--accent); margin-bottom: 15px; font-weight: 600; letter-spacing: 1px;}
+        .v-title { font-size: 34px; font-weight: 600; margin-bottom: 20px; letter-spacing: -1.5px; }
+        .v-desc { color: var(--text-sub); font-size: 16px; margin-bottom: 40px; max-width: 800px; line-height: 1.7; }
+        
+        .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid var(--glass-stroke); padding-top: 35px;}
+        .tech-item { font-size: 13px; color: #aaa; display: flex; align-items: center; gap: 12px; }
+        .tech-item i { font-size: 11px; color: var(--accent); }
+
+        .action-btn { 
+            display: inline-block; background: #fff; color: #000; padding: 16px 40px; border-radius: 18px; 
+            font-size: 15px; font-weight: 700; text-decoration: none; transition: 0.3s; margin-top: 30px;
+        }
+        .action-btn:hover { background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 10px 20px var(--accent-glow); }
+
+        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 40px; margin-bottom: 80px; }
+        .faq-card { background: var(--glass); border: 1px solid var(--glass-stroke); border-radius: 26px; padding: 35px; transition: 0.4s; }
+        .faq-card:hover { border-color: var(--accent); }
+        .faq-card h4 { font-size: 17px; margin-bottom: 15px; color: #fff; display: flex; align-items: center; gap: 12px;}
+        .faq-card p { font-size: 14px; color: var(--text-sub); line-height: 1.8; }
+
+        /* 浮动计算器样式 */
+        .floating-calc-trigger {
+            position: fixed; bottom: 40px; right: 40px; width: 64px; height: 64px;
+            background: #fff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; cursor: pointer; z-index: 1000; transition: 0.5s cubic-bezier(0.17, 0.89, 0.32, 1.28);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        .calc-panel {
+            position: fixed; bottom: 120px; right: 40px; width: 320px; background: var(--glass-heavy); 
+            border: 1px solid var(--glass-stroke); backdrop-filter: blur(40px); border-radius: 35px; padding: 35px;
+            display: none; z-index: 1000; box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+            animation: iosSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .calc-input {
+            background: rgba(255,255,255,0.06); border: none; color: #fff; width: 100%; padding: 18px; 
+            border-radius: 18px; margin: 12px 0; font-family: 'SF Mono'; text-align: center; font-size: 20px;
+        }
+
+        /* Alpha 同款返回顶部按钮样式 */
+        .back-to-top {
+            position: fixed; bottom: 120px; right: 40px; width: 64px; height: 64px;
+            background: var(--glass-heavy); border: 1px solid var(--glass-stroke); backdrop-filter: blur(20px);
+            color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer; z-index: 999; opacity: 0; pointer-events: none;
+            transform: translateY(20px); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        .back-to-top:hover { background: #fff; color: #000; transform: scale(1.1); }
+
+        .link-group { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 60px; }
+        .main-link { 
+            background: var(--glass-heavy); border: 1px solid var(--accent); color: #fff;
+            padding: 20px 60px; border-radius: 20px; font-weight: 600; text-decoration: none;
+            transition: 0.4s; box-shadow: 0 0 30px var(--accent-glow);
+        }
+        .main-link:hover { transform: scale(1.05); background: var(--accent); }
+
+        @keyframes iosSlideIn { from { opacity: 0; transform: translateY(30px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        footer { padding: 100px 0 50px; text-align: center; border-top: 1px solid var(--glass-stroke); opacity: 0.4; font-size: 10px; letter-spacing: 2px; }
+
+        @media (max-width: 768px) {
+            .ios-grid { grid-template-columns: repeat(2, 1fr); }
+            .tech-grid, .faq-grid { grid-template-columns: 1fr; }
+            .v-card { padding: 40px 25px; }
+            .hero-title { font-size: 42px; }
+            .back-nav-btn span { display: none; }
+            .back-to-top, .floating-calc-trigger { right: 20px; }
+            .back-to-top { bottom: 100px; width: 50px; height: 50px; }
+            .floating-calc-trigger { bottom: 30px; width: 50px; height: 50px; }
+            .calc-panel { right: 20px; bottom: 90px; width: calc(100% - 40px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-light" id="ambient"></div>
+
+    <div class="back-to-top" id="back-to-top">
+        <i class="fa-solid fa-arrow-up"></i>
+    </div>
+
+    <aside class="floating-calc-trigger" id="calc-toggle">₮</aside>
+    <div class="calc-panel" id="calc-panel">
+        <div style="font-size:11px; color:var(--text-sub); letter-spacing:3px; margin-bottom:20px; text-align:center; font-weight:600;">EXCHANGE CALCULATOR</div>
+        <input type="number" class="calc-input" id="input-rmb" value="100">
+        <div style="text-align:center; color:var(--accent); font-size:16px; margin: 5px 0;">↓</div>
+        <input type="text" class="calc-input" id="output-usdt" readonly style="background:rgba(50,215,75,0.12); color:var(--accent); font-weight:700;">
+        <div style="font-size:12px; color:var(--text-sub); text-align:center; margin-top:15px; opacity:0.8;">实时汇率参考: 1 USDT ≈ 7.245 RMB</div>
+    </div>
+
+    <main id="main-frame">
+        <header class="ios-nav">
+            <a href="index.html#hub" class="back-nav-btn">
+                <i class="fa-solid fa-chevron-left"></i>
+                <span>返回导航页</span>
+            </a>
+            <div class="brand-logo">MGNB NETWORK</div>
+            <div class="dynamic-island">
+                <div class="status-pulse"></div>
+                <span>SLA: <b id="uptime">99.99%</b></span>
+            </div>
+        </header>
+
+        <section class="ios-grid">
+            <div class="grid-item"><span>LATENCY</span><b id="ping">18ms</b></div>
+            <div class="grid-item"><span>NODES</span><b>20+ GLOBAL</b></div>
+            <div class="grid-item"><span>TRAFFIC</span><b>UNLIMITED</b></div>
+            <div class="grid-item"><span>ENCRYPT</span><b>AES-256-GCM</b></div>
+        </section>
+
+        <section class="hero-section">
+            <h1 class="hero-title">飞跃太平洋<br>顷刻间，连接全球</h1>
+            <p class="hero-sub">专为中国用户优化，工业级 BGP & IEPL 专线守护。提供 99% 连通率保证，让 4K 视频、AI 工具与流媒体无感接入。</p>
+        </section>
+
+        <section class="table-container">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th class="feature-name">MATRIX / 线路矩阵</th>
+                        <th>Standard</th>
+                        <th>Professional</th>
+                        <th>Elite</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="feature-name">线路架构</td><td>BGP 中继</td><td>IEPL 专线</td><td>IEPL 极速专线</td></tr>
+                    <tr><td class="feature-name">最高速率</td><td>500 Mbps</td><td>1.0 Gbps</td><td>2.5 Gbps</td></tr>
+                    <tr><td class="feature-name">高峰期优先级</td><td>普通</td><td>高优先</td><td>最高优先 (0 丢包)</td></tr>
+                    <tr><td class="feature-name">流媒体解锁</td><td>部分支持</td><td>全线支持</td><td>独享解锁池</td></tr>
+                    <tr><td class="feature-name">SLA 赔付保证</td><td><i class="fa-solid fa-minus" style="opacity:0.2"></i></td><td><i class="fa-solid fa-check" style="color:var(--accent)"></i></td><td><i class="fa-solid fa-check" style="color:var(--accent)"></i></td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="v-stack">
+            <div class="v-card">
+                <span class="v-price">¥18.00 / Month</span>
+                <h2 class="v-title">VIP: 基础加速套组</h2>
+                <p class="v-desc">适合日常网页浏览与办公。提供 100GB 高速流量，满足 ChatGPT 及常规社交媒体访问需求。</p>
+                <div class="tech-grid">
+                    <div class="tech-item"><i class="fa-solid fa-circle-check"></i> 100GB 每月流量</div>
+                    <div class="tech-item"><i class="fa-solid fa-circle-check"></i> 500Mbps 峰值速率</div>
+                    <div class="tech-item"><i class="fa-solid fa-circle-check"></i> 支持 5 台设备连接</div>
+                    <div class="tech-item"><i class="fa-solid fa-circle-check"></i> 全平台一键接入</div>
+                </div>
+                <a href="https://pages.mgnb01.com/user/register?code=47SjBUdd" class="action-btn">立即订阅</a>
+            </div>
+
+            <div class="v-card" style="background: rgba(50, 215, 75, 0.04); border-color: rgba(50, 215, 75, 0.3);">
+                <span class="v-price">¥35.00 / Month</span>
+                <h2 class="v-title" style="color:var(--accent)">SVIP: IEPL 专线套组</h2>
+                <p class="v-desc">采用顶级 IEPL 点对点内网专线。不经过公网，无视晚高峰拥堵，是 4K 直播与专业开发者的首选。</p>
+                <div class="tech-grid">
+                    <div class="tech-item"><i class="fa-solid fa-bolt"></i> 500GB 专线流量</div>
+                    <div class="tech-item"><i class="fa-solid fa-bolt"></i> 1.0Gbps 极速带宽</div>
+                    <div class="tech-item"><i class="fa-solid fa-bolt"></i> 支持 10 台设备连接</div>
+                    <div class="tech-item"><i class="fa-solid fa-bolt"></i> 独享客服响应</div>
+                </div>
+                <a href="https://pages.mgnb01.com/user/register?code=47SjBUdd" class="action-btn" style="background:var(--accent); color:#fff">最受欢迎</a>
+            </div>
+
+            <div class="v-card">
+                <span class="v-price">¥100.00 / One-Time</span>
+                <h2 class="v-title">不限时: 长期备用套组</h2>
+                <p class="v-desc">一次性付费，流量永久有效。适合作为紧急备用线路，无月费压力，随时随地开启连接。</p>
+                <div class="tech-grid">
+                    <div class="tech-item"><i class="fa-solid fa-clock"></i> 100GB 永久有效</div>
+                    <div class="tech-item"><i class="fa-solid fa-clock"></i> 500Mbps 稳定速率</div>
+                    <div class="tech-item"><i class="fa-solid fa-clock"></i> 线路动态维护更新</div>
+                    <div class="tech-item"><i class="fa-solid fa-clock"></i> 永不失效的特权</div>
+                </div>
+                <a href="https://pages.mgnb01.com/user/register?code=47SjBUdd" class="action-btn">永久拥有</a>
+            </div>
+        </div>
+
+        <section class="faq-section">
+            <p style="text-align:center; font-size:11px; color:var(--text-sub); letter-spacing:5px; text-transform:uppercase; margin-bottom: 40px;">核心优势 / CORE FEATURES</p>
+            <div class="faq-grid">
+                <div class="faq-card">
+                    <h4><i class="fa-solid fa-shield-halved" style="color:var(--accent)"></i> 工业级隐私保护</h4>
+                    <p>基于自研隧道协议，对数据进行全路径加密，确保您的访问记录在运营商及黑客面前完全隐形。</p>
+                </div>
+                <div class="faq-card">
+                    <h4><i class="fa-solid fa-globe" style="color:var(--accent)"></i> 跨平台无感连接</h4>
+                    <p>适配 Windows, iOS, Android 及 macOS。支持全自动节点更新，只需一次配置，终身无忧使用。</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="link-group">
+            <a href="https://pages.mgnb01.com/user/register?code=47SjBUdd" class="main-link">进入 MGNB 官网</a>
+            <p style="color:var(--text-sub); font-size:12px">已有账号？<a href="https://pages.mgnb01.com/user/register?code=PGjNufJG" style="color:var(--accent); text-decoration:none">立即登录</a></p>
+        </div>
+
+        <footer>COPYRIGHT © 2021-2026 MGNB, LTD. ALL RIGHTS RESERVED.</footer>
+    </main>
+
+    <script>
+        window.addEventListener('load', () => {
+            const mainFrame = document.getElementById('main-frame');
+            requestAnimationFrame(() => { mainFrame.classList.add('appear'); });
+            const delayItems = document.querySelectorAll('.grid-item, .v-card, .table-container, .faq-card, .link-group');
+            delayItems.forEach((item, index) => {
+                item.style.transitionDelay = `${0.1 + (index * 0.05)}s`;
+            });
+        });
+
+        const ambient = document.getElementById('ambient');
+        window.addEventListener('mousemove', e => {
+            ambient.style.setProperty('--x', e.clientX + 'px');
+            ambient.style.setProperty('--y', e.clientY + 'px');
+        });
+
+        setInterval(() => {
+            document.getElementById('ping').innerText = (15 + Math.random() * 5).toFixed(0) + 'ms';
+            if(Math.random() > 0.9) {
+                document.getElementById('uptime').innerText = '99.9' + Math.floor(Math.random()*9) + '%';
+            }
+        }, 2000);
+
+        // Alpha 同款返回顶部逻辑
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 计算器逻辑
+        const USDT_RATE = 7.2452;
+        const calcToggle = document.getElementById('calc-toggle');
+        const calcPanel = document.getElementById('calc-panel');
+        const rmbInput = document.getElementById('input-rmb');
+        const usdtOutput = document.getElementById('output-usdt');
+
+        calcToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            calcPanel.style.display = (calcPanel.style.display === 'block') ? 'none' : 'block';
+            updateCalc();
+        });
+
+        function updateCalc() {
+            const rmb = parseFloat(rmbInput.value) || 0;
+            usdtOutput.value = (rmb / USDT_RATE).toFixed(2) + ' USDT';
+        }
+        rmbInput.addEventListener('input', updateCalc);
+        document.addEventListener('click', (e) => { if (!calcPanel.contains(e.target)) calcPanel.style.display = 'none'; });
+    </script>
+</body>
+</html>
